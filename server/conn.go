@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dutchcoders/marija/server/datasources"
 	"github.com/dutchcoders/marija/server/messages"
 
 	"github.com/gorilla/websocket"
@@ -48,7 +49,7 @@ type connection struct {
 	server *Server
 	closed bool
 
-	items ItemCache //map[string][]datasources.Item
+	items map[string][]datasources.Item
 }
 
 func (c *connection) Send(v json.Marshaler) {
@@ -231,7 +232,7 @@ func (s *Server) serveWs(w http.ResponseWriter, r *http.Request) {
 		send:   make(chan json.Marshaler, 256),
 		ws:     ws,
 		server: s,
-		items:  ItemCache{},
+		items:  map[string][]datasources.Item{},
 	}
 
 	ws.SetReadLimit(0)
