@@ -8,7 +8,6 @@ import (
 	"hash/fnv"
 	_ "log"
 	"runtime"
-	"sort"
 	"time"
 
 	"github.com/dutchcoders/marija/server/datasources"
@@ -106,7 +105,6 @@ func (c *connection) Search(ctx context.Context, r messages.SearchRequest) error
 					}
 
 					// filter fields
-					keys := []string{}
 					values := map[string]interface{}{}
 
 					for _, field := range r.Fields {
@@ -115,16 +113,30 @@ func (c *connection) Search(ctx context.Context, r messages.SearchRequest) error
 							continue
 						}
 
-						keys = append(keys, field)
 						values[field] = v
 					}
 
-					sort.Strings(keys)
+					count := 0
+					for _ = range values {
+						count++
+					}
+
+					if count == 0 {
+						continue
+					}
 
 					// calculate hash of fields
 					h := fnv.New128()
-					for _, k := range keys {
-						fmt.Fprintf(h, "\"%s\":\"%v\"", k, values[k])
+					for _, field := range values {
+						switch s := field.(type) {
+						case []string:
+							for _, v := range s {
+								h.Write([]byte(v))
+							}
+						case string:
+							h.Write([]byte(s))
+						default:
+						}
 					}
 
 					hash := h.Sum(nil)
