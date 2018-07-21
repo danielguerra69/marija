@@ -127,18 +127,16 @@ func (i *Elasticsearch) Search(ctx context.Context, so datasources.SearchOptions
 		defer close(itemCh)
 		defer close(errorCh)
 
-		/*
-			hl := elastic.NewHighlight()
-			hl = hl.Fields(elastic.NewHighlighterField("*").RequireFieldMatch(false).NumOfFragments(0))
-			hl = hl.PreTags("<em>").PostTags("</em>")
-		*/
+		hl := elastic.NewHighlight()
+		hl = hl.Fields(elastic.NewHighlighterField("*").RequireFieldMatch(false).NumOfFragments(0))
+		hl = hl.PreTags("<em>").PostTags("</em>")
 
 		q := elastic.NewQueryStringQuery(so.Query)
 
 		src := elastic.NewSearchSource().
 			Query(q).
 			FetchSource(false).
-			/*Highlight(hl).*/
+			Highlight(hl).
 			FetchSource(true).
 			From(so.From).
 			Size(100)
@@ -189,11 +187,9 @@ func (i *Elasticsearch) Search(ctx context.Context, so datasources.SearchOptions
 
 				fields = flattenFields("", fields)
 
-				/*
-					for key, val := range hit.Fields {
-						fields[key] = val
-					}
-				*/
+				for key, val := range hit.Fields {
+					fields[key] = val
+				}
 
 				itemCh <- datasources.Item{
 					ID:     hit.Id,
