@@ -108,8 +108,8 @@ func (c *connection) Search(ctx context.Context, r messages.SearchRequest) error
 					values := map[string]interface{}{}
 
 					for _, field := range r.Fields {
-						v, _ := item.Fields[field]
-						if v == nil {
+						v, ok := item.Fields[field]
+						if !ok {
 							continue
 						}
 
