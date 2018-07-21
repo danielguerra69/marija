@@ -95,10 +95,8 @@ func (server *Server) Run() {
 | |\/| |/ _' | '__| || |/ _' |
 | |  | | (_| | |  | || | (_| |
 |_|  |_|\__,_|_|  |_|/ |\__,_|
-                   |__/            
-
-Advanced (big) data discovery and exploration. %c
-`, 0x1f31d))
+                   |__/
+`))
 	}
 
 	fmt.Println(color.YellowString("Marija server started %s (%s)", Version, ShortCommitID))
