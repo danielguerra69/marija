@@ -109,10 +109,14 @@ func (c *connection) Search(ctx context.Context, r messages.SearchRequest) error
 					keys := []string{}
 					values := map[string]interface{}{}
 
-					for k, v := range item.Fields {
-						keys = append(keys, k)
+					for _, field := range r.Fields {
+						v, _ := item.Fields[field]
+						if v == nil {
+							continue
+						}
 
-						values[k] = v
+						keys = append(keys, field)
+						values[field] = v
 					}
 
 					sort.Strings(keys)
